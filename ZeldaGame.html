@@ -1,0 +1,267 @@
+<head>
+	<title>Turtle Attack!!</title>
+	<meta charset="UTF-8">
+</head>
+<body>
+<br>
+<canvas id="myCanvas" width="1000" height="500" style="border:1px solid #cccccc;"></canvas>
+
+<script type="text/javascript">
+
+class Sprite
+{
+	constructor(x1, y1, w1, h1, image_url)
+	{
+		this.x = x1;
+		this.y = y1;
+		this.w = w1;
+		this.h = h1;
+		this.image = new Image();
+		this.image.src = image_url;
+		this.direction = 0;
+	}
+	
+	
+}
+
+class Brick extends Sprite
+{
+	constructor(x, y, w, h, image_url)
+	{
+		super(x, y, w, h, image_url);
+	}
+	
+	update() //sit_still
+	{
+	
+	}
+}
+
+class Link extends Sprite
+{
+
+	constructor(x, y)
+	{
+
+		super(x, y, 55, 70,"linkPictures/1.png");
+		this.linkPictures = [];
+		this.loadImages();
+		this.prevX = this.x;
+		this.prevY = this.y;
+		this.x = x;
+		this.y = y;
+		this.speed = 8;
+		this.image = this.linkPictures[0];
+		this.animationNum = 0;
+	}
+
+	//Link movement
+	moveUp(){
+		this.direction = 1;
+		this.y -= this.speed;
+		if (this.animationNum >=4){
+			this.animationNum = 0;
+		}
+		this.animationNum++;
+	}
+
+	moveDown(){
+        //Animating link and setting directions for boomerang
+        this.direction = 3;
+        this.y += this.speed;
+        //Animating the character
+        if (this.AnimationNum >= 9 || this.AnimationNum < 5){
+            this.AnimationNum = 5;	
+        }
+        this.AnimationNum++;
+    }
+
+	moveRight(){
+        //Animating link and setting directions for boomerang
+			this.direction = 2;
+			this.x += this.speed;
+			//Animating the character
+			if (this.AnimationNum >= 19 || this.AnimationNum < 15){
+				this.AnimationNum = 15;	
+			}
+			this.AnimationNum++;
+    }
+
+	moveLeft(){
+        //Animating link and setting directions for boomerang
+			this.direction = 4;
+			this.x -= this.speed;
+			//Animating the character
+			if (this.AnimationNum >= 14 || this.AnimationNum < 10){
+				this.AnimationNum = 10;	
+			}
+			this.AnimationNum++;
+    }
+
+
+
+	//Loads the images
+	loadImages(){
+		if (this.linkPictures.length === 0){
+			for (let i = 1; i < 25; i++){
+				this.image = new Image();
+				this.image.src = "linkPictures/" + i + ".png";
+				this.linkPictures.push(this.image);
+			}
+		}
+	}
+
+	//Returns true to show that link is still active
+	update() //set_destination formerly
+	{
+		return true;
+		this.toString();
+	}
+
+	//Let's us go through the sprites array and make sure that the object we are looking at is link
+	isLink(){return true};
+
+	toString(){
+		console.log("Links position is, x: " + this.x + ", y: " + this.y);
+	}
+
+	
+}
+
+
+
+
+class Model
+{
+	constructor()
+	{
+		this.sprites = [];
+		this.sprites.push(new Brick(200, 100, 50, 50, "brick.jpg"));
+		this.link = new Link(50,50);
+		this.sprites.push(this.link);
+	}
+
+	update()
+	{
+		for(let i = 0; i < this.sprites.length; i++)
+		{
+			this.sprites[i].update();
+		}
+	}
+}
+
+
+
+
+class View
+{
+	constructor(model)
+	{
+		this.model = model;
+		this.canvas = document.getElementById("myCanvas");
+	}
+
+	update()
+	{
+		let ctx = this.canvas.getContext("2d");
+		ctx.clearRect(0, 0, 700, 500);
+		for(let i = 0; i < this.model.sprites.length; i++)
+		{
+			let sprite = this.model.sprites[i];
+			ctx.drawImage(sprite.image, sprite.x, sprite.y);
+		}
+	}
+}
+
+
+
+
+
+
+
+class Controller
+{
+	constructor(model, view)
+	{
+		this.model = model;
+		this.view = view;
+
+		//Movement
+		this.key_right = false;
+		this.key_left = false;
+		this.key_up = false;
+		this.key_down = false;
+
+
+		let self = this;
+		view.canvas.addEventListener("click", function(event) { self.onClick(event); });
+		document.addEventListener('keydown', function(event) { self.keyDown(event); }, false);
+		document.addEventListener('keyup', function(event) { self.keyUp(event); }, false);
+	}
+
+	
+	keyDown(event)
+	{
+		if(event.keyCode == 39) this.key_right = true;
+		else if(event.keyCode == 37) this.key_left = true;
+		else if(event.keyCode == 38) this.key_up = true;
+		else if(event.keyCode == 40) this.key_down = true;
+	}
+
+	keyUp(event)
+	{
+		if(event.keyCode == 39) this.key_right = false;
+		else if(event.keyCode == 37) this.key_left = false;
+		else if(event.keyCode == 38) this.key_up = false;
+		else if(event.keyCode == 40) this.key_down = false;
+	}
+
+	update()
+	{
+		let dx = 0;
+		let dy = 0;
+		if(this.key_right) 
+		{	
+			this.model.link.moveRight();
+			
+		}
+		if(this.key_left)
+		{
+			this.model.link.moveLeft();
+		}
+		if(this.key_up){
+			this.model.link.moveUp();
+		}
+		if(this.key_down){
+			this.model.link.moveDown();
+		}
+	}
+}
+
+
+
+
+
+class Game
+{
+	constructor()
+	{
+		this.model = new Model();
+		this.view = new View(this.model);
+		this.controller = new Controller(this.model, this.view);
+	}
+
+	onTimer()
+	{
+		this.controller.update();
+		this.model.update();
+		this.view.update();
+	}
+}
+
+let game = new Game();
+let timer = setInterval(function() { game.onTimer(); }, 40);
+
+</script>
+
+</body>
