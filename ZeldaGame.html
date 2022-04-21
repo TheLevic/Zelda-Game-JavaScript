@@ -19,11 +19,15 @@ class Sprite
 		this.image = new Image();
 		this.direction = 0;
 	}
+
+	update(){
+
+	}
 	
 	
 }
 
-class Boomerange extends Sprite{
+class Boomerang extends Sprite{
 	constructor(x,y,w,h){
 		super(x,y,w,h);
 		this.images = [];
@@ -35,6 +39,7 @@ class Boomerange extends Sprite{
 		this.animationNum = 0;
 		this.speed = 5;
 		this.image = new Image();
+		this.image.src = "Images/boomerang1.png"
 	}
 
 	cycleImages(){
@@ -50,7 +55,7 @@ class Boomerange extends Sprite{
 
 	loadImages(){
 		if (this.images.length === 0){
-			for (let i = 0; i < maxImageNum; i++){
+			for (let i = 0; i < this.maxImageNum; i++){
 				this.image = new Image();
 				this.image.src = "Images/boomerang" + i + 1 + ".png";
 				this.images.push(this.image);
@@ -71,7 +76,7 @@ class Brick extends Sprite{
 	
 	update() //sit_still
 	{
-	
+		return true;
 	}
 }
 
@@ -135,6 +140,10 @@ class Link extends Sprite{
 			this.AnimationNum++;
     }
 
+	getDirection(){
+		return this.direction;
+	}
+
 
 
 	//Loads the images
@@ -180,6 +189,36 @@ class Model{
 			this.sprites[i].update();
 		}
 	}
+
+	addBoomerang(){
+		this.boom = new Boomerang(this.link.x, this.link.y, 8, 12);
+		if (this.link.getDirection() == 1){
+			this.boom.xdirection = 0;
+			this.boom.ydirection = -1;
+			this.boom.x = this.link.x + (this.link.w * 1/2);
+			this.boom.y = this.link.y;
+		}
+		else if (this.link.getDirection() == 2){
+			this.boom.xdirection = 1;
+			this.boom.ydirection = 0;
+			this.boom.x = this.link.x + this.link.w;
+			this.boom.y = this.link.y + (this.link.h * 1/2);
+		}
+		else if (this.link.getDirection() == 3){
+			this.boom.xdirection = 0;
+			this.boom.ydirection = 1;
+			this.boom.x = this.link.x + (this.link.w * 1/2);
+			this.boom.y = this.link.y + this.link.h;
+		}
+		else if (this.link.getDirection() == 4){
+			this.boom.xdirection = -1;
+			this.boom.ydirection = 0;
+			this.boom.x = this.link.x;
+			this.boom.y = this.link.y + (this.link.h * 1/2);
+		}
+		this.sprites.push(this.boom);
+	}
+
 }
 
 
@@ -239,6 +278,7 @@ class Controller
 		else if(event.keyCode == 37) this.key_left = false;
 		else if(event.keyCode == 38) this.key_up = false;
 		else if(event.keyCode == 40) this.key_down = false;
+		else if(event.keyCode == 17) this.model.addBoomerang();
 	}
 
 	update(){
