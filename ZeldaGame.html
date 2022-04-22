@@ -33,20 +33,19 @@ class Boomerang extends Sprite{
 		this.images = [];
 		this.loadImages();
 		this.isActive = true;
-		this.xDirection = null;
-		this.yDirection = null;
-		const maxImageNum = 4;
+		this.xDirection = 0;
+		this.yDirection = 0;
 		this.animationNum = 0;
 		this.speed = 5;
-		this.image = new Image();
-		this.image.src = "Images/boomerang1.png"
+		this.image = this.images[this.animationNum];
 	}
 
 	cycleImages(){
-        if (animationNum === maxImageNum - 1){
-            animationNum = 0;
+        if (this.animationNum === 3){
+            this.animationNum = 0;
         }
-        animationNum++;
+		this.image = this.images[this.animationNum];
+        this.animationNum++;
     } 
 
 	Collided(){
@@ -55,13 +54,24 @@ class Boomerang extends Sprite{
 
 	loadImages(){
 		if (this.images.length === 0){
-			for (let i = 0; i < this.maxImageNum; i++){
+			for (let i = 0; i < 3; i++){
 				this.image = new Image();
-				this.image.src = "Images/boomerang" + i + 1 + ".png";
+				this.tmp = i + 1;
+				this.image.src = "Images/boomerang" + this.tmp + ".png";
+				console.log("Pushing " + "Images/boomerang" + this.tmp + ".png")
 				this.images.push(this.image);
 			}
 		}
 	}
+
+	update(){
+        //Moving the boomerang
+        this.x += this.speed * this.xDirection;
+        this.y += this.speed * this.yDirection;
+        this.cycleImages();
+		console.log(this.images.length)
+        return this.isActive;
+    }
 }
 
 
@@ -197,26 +207,26 @@ class Model{
 	addBoomerang(){
 		this.boom = new Boomerang(this.link.x, this.link.y, 8, 12);
 		if (this.link.getDirection() == 1){
-			this.boom.xdirection = 0;
-			this.boom.ydirection = -1;
+			this.boom.xDirection = 0;
+			this.boom.yDirection = -1;
 			this.boom.x = this.link.x + (this.link.w * 1/2);
 			this.boom.y = this.link.y;
 		}
 		else if (this.link.getDirection() == 2){
-			this.boom.xdirection = 1;
-			this.boom.ydirection = 0;
+			this.boom.xDirection = 1;
+			this.boom.yDirection = 0;
 			this.boom.x = this.link.x + this.link.w;
 			this.boom.y = this.link.y + (this.link.h * 1/2);
 		}
 		else if (this.link.getDirection() == 3){
-			this.boom.xdirection = 0;
-			this.boom.ydirection = 1;
+			this.boom.xDirection = 0;
+			this.boom.yDirection = 1;
 			this.boom.x = this.link.x + (this.link.w * 1/2);
 			this.boom.y = this.link.y + this.link.h;
 		}
 		else if (this.link.getDirection() == 4){
-			this.boom.xdirection = -1;
-			this.boom.ydirection = 0;
+			this.boom.xDirection = -1;
+			this.boom.yDirection = 0;
 			this.boom.x = this.link.x;
 			this.boom.y = this.link.y + (this.link.h * 1/2);
 		}
