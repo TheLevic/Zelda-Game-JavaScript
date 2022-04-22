@@ -104,7 +104,8 @@ class Link extends Sprite{
 		if (this.animationNum >=4){
 			this.animationNum = 0;
 		}
-		this.image = this.linkPictures[this.animationNum++];
+		this.image = this.linkPictures[this.animationNum];
+		this.animationNum++;
 	}
 
 	moveDown(){
@@ -112,10 +113,11 @@ class Link extends Sprite{
         this.direction = 3;
         this.y += this.speed;
         //Animating the character
-        if (this.AnimationNum >= 9 || this.AnimationNum < 5){
-            this.AnimationNum = 5;	
+        if (this.animationNum >= 9 || this.animationNum < 5){
+            this.animationNum = 5;	
         }
-        this.AnimationNum++;
+        this.animationNum++;
+		this.image = this.linkPictures[this.animationNum];
     }
 
 	moveRight(){
@@ -123,10 +125,11 @@ class Link extends Sprite{
 			this.direction = 2;
 			this.x += this.speed;
 			//Animating the character
-			if (this.AnimationNum >= 19 || this.AnimationNum < 15){
-				this.AnimationNum = 15;	
+			if (this.animationNum >= 19 || this.animationNum < 15){
+				this.animationNum = 15;	
 			}
-			this.AnimationNum++;
+			this.image = this.linkPictures[this.animationNum];
+			this.animationNum++;
     }
 
 	moveLeft(){
@@ -134,10 +137,11 @@ class Link extends Sprite{
 			this.direction = 4;
 			this.x -= this.speed;
 			//Animating the character
-			if (this.AnimationNum >= 14 || this.AnimationNum < 10){
-				this.AnimationNum = 10;	
+			if (this.animationNum >= 14 || this.animationNum < 10){
+				this.animationNum = 10;	
 			}
-			this.AnimationNum++;
+			this.image = this.linkPictures[this.animationNum];
+			this.animationNum++;
     }
 
 	getDirection(){
