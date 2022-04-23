@@ -23,6 +23,12 @@ class Sprite
 	update(){
 
 	}
+	isLink(){
+		return false;
+	}
+	isBoomerang(){
+		return false;
+	}
 	
 	
 }
@@ -49,7 +55,7 @@ class Boomerang extends Sprite{
     } 
 
 	Collided(){
-        isActive = false;
+        this.isActive = false;
     }
 
 	loadImages(){
@@ -58,7 +64,6 @@ class Boomerang extends Sprite{
 				this.image = new Image();
 				this.tmp = i + 1;
 				this.image.src = "Images/boomerang" + this.tmp + ".png";
-				console.log("Pushing " + "Images/boomerang" + this.tmp + ".png")
 				this.images.push(this.image);
 			}
 		}
@@ -69,9 +74,11 @@ class Boomerang extends Sprite{
         this.x += this.speed * this.xDirection;
         this.y += this.speed * this.yDirection;
         this.cycleImages();
-		console.log(this.images.length)
         return this.isActive;
     }
+	isBoomerang(){
+		return true;
+	}
 }
 
 
@@ -92,20 +99,41 @@ class Brick extends Sprite{
 
 class Link extends Sprite{
 
-	constructor(x, y){
+	constructor(X, Y){
 		const width = 55;
 		const height = 70;
-		super(x, y, width, height);
+		super(X, Y, width, height);
 		this.linkPictures = [];
 		this.loadImages();
+		this.x = X;
+		this.y = X;
 		this.prevX = this.x;
 		this.prevY = this.y;
-		this.x = x;
-		this.y = y;
 		this.speed = 8;
 		this.animationNum = 0;
 		this.image = this.linkPictures[this.animationNum];
 	}
+
+	getOutOfSprite(b){
+        //If he's going right into a brick
+        if (this.x + this.w >= b.x && this.prevX + this.w <= b.x){
+           this.x = this.prevX;
+        }
+        //If he's going left into a brick
+        if (this.x <= b.x + b.w && this.prevX >= b.x + b.w){
+            this.x = this.prevX;
+        }
+
+        //If his head is in a brick
+        if(this.y <= b.y + b.h && this.prevY >= b.y + b.h){
+            this.y = this.prevY;
+        }
+
+        //If his feet are in a brick
+        if (this.y + this.h >= b.y && this.prevY + this.h <= b.y){
+            this.y = this.prevY;
+        }
+    }
 
 	//Link movement
 	moveUp(){
@@ -173,17 +201,19 @@ class Link extends Sprite{
 
 	//Returns true to show that link is still active
 	update(){  //set_destination formerly
+		this.prevX = this.x;
+		this.prevY = this.y;
 		return true;
 	}
 
 	//Let's us go through the sprites array and make sure that the object we are looking at is link
-	isLink(){return true};
+	isLink(){
+		return true;
+	}
 
 	toString(){
 		console.log("Links position is, x: " + this.x + ", y: " + this.y);
 	}
-
-	
 }
 
 
@@ -200,7 +230,25 @@ class Model{
 	update(){
 		for(let i = 0; i < this.sprites.length; i++)
 		{
+			for (let j = 0; j < this.sprites.length; j++){
+				if (i!=j){
+					this.collide = this.isThereACollision(this.sprites[i],this.sprites[j]);
+					if (this.collide){
+						//Collison for link
+						if (this.sprites[i].isLink()){
+							this.link.getOutOfSprite(this.sprites[j]);
+						}
+						//Collision for boomerang hitting anything (besides link)
+						else if (this.sprites[i].isBoomerang() && !this.sprites[j].isLink()){
+							this.sprites[i].Collided();
+						}
+					}
+				}
+			}
 			this.sprites[i].update();
+			if (this.sprites[i].update() === false){
+				this.sprites.splice(i,1);
+			}
 		}
 	}
 
@@ -233,6 +281,21 @@ class Model{
 		this.sprites.push(this.boom);
 	}
 
+	isThereACollision(l,b){
+		if (l.x + l.w < b.x){
+			return false;
+		}
+		if (l.x > b.x + b.w){
+			return false;
+		}
+		if(l.y + l.h < b.y){
+			return false;
+		}
+		if (l.y > b.y + b.h){
+			return false;
+		}
+		return true;
+	}
 }
 
 
