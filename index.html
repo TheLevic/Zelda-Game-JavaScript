@@ -447,14 +447,18 @@ class View
 	constructor(model){
 		this.model = model;
 		this.canvas = document.getElementById("myCanvas");
+		this.windowXSize = 700;
+		this.windowYSize = 500;
+		this.scrollPositonX = 0;
+		this.scrollPositonY = 0;
 	}
 
 	update(){
 		let ctx = this.canvas.getContext("2d");
-		ctx.clearRect(0, 0, 700, 500);
+		ctx.clearRect(0, 0, this.windowXSize, this.windowYSize);
 		for(let i = 0; i < this.model.sprites.length; i++){
 			let sprite = this.model.sprites[i];
-			ctx.drawImage(sprite.image, sprite.x, sprite.y);
+			ctx.drawImage(sprite.image, sprite.x - this.scrollPositonX, sprite.y - this.scrollPositonY);
 		}
 	}
 }
@@ -505,17 +509,45 @@ class Controller
 		if(this.key_right) 
 		{	
 			this.model.link.moveRight();
-			
+			this.viewIncreaseX();
 		}
 		if(this.key_left)
 		{
 			this.model.link.moveLeft();
+			this.viewDecreaseX();
 		}
 		if(this.key_up){
 			this.model.link.moveUp();
+			this.viewDecreaseY();
 		}
 		if(this.key_down){
 			this.model.link.moveDown();
+			this.viewIncreaseY();
+		}
+	}
+
+	//Making sure the view stays in bounds
+	viewIncreaseX(){
+		console.log(this.model.link.x)
+		console.log(this.view.windowXSize)
+		if (this.model.link.x >= this.view.windowXSize && this.view.scrollPositonX < this.view.windowXSize){
+			this.view.scrollPositonX += this.view.windowXSize;
+		}
+	}
+	viewDecreaseX(){
+		if (this.model.link.x <= this.view.windowXSize && this.view.scrollPositonX >= this.view.windowXSize){
+			this.view.scrollPositonX -= this.view.windowXSize;
+		}
+
+	}
+	viewIncreaseY(){
+		if (this.model.link.y >= this.view.windowYSize && this.view.scrollPositonY < this.view.windowYSize){
+			this.view.scrollPositonY += this.view.windowYSize;
+		}
+	}
+	viewDecreaseY(){
+		if (this.model.link.y <= this.view.windowYSize && this.view.scrollPositonY >= this.view.windowYSize){
+			this.view.scrollPositonY -= this.view.windowYSize;
 		}
 	}
 }
