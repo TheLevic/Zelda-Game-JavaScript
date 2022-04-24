@@ -1,5 +1,5 @@
 <head>
-	<title>Turtle Attack!!</title>
+	<title>The Legend Of Zelda</title>
 	<meta charset="UTF-8">
 </head>
 <body>
@@ -29,8 +29,110 @@ class Sprite
 	isBoomerang(){
 		return false;
 	}
+	isPot(){
+		return false;
+	}
 	
 	
+}
+
+class Pot extends Sprite{
+	constructor(x,y,w,h){
+		super(x,y,w,h);
+		this.images = [];
+		this.maxImageNum = 2;
+		this.animationNum = 0;
+		this.speed = 5;
+		this.inOnePiece = true;
+		this.xDirection = 0;
+		this.yDirection = 0;
+		this.moveUp = false;
+		this.moveDown = false;
+		this.moveLeft = false;
+		this.moveRight = false;
+		this.countDown = 15;
+		this.isActive = true;
+		this.loadImage();
+	}
+	loadImage(){
+		if (this.images.length === 0){
+			for (let i = 0; i < this.maxImageNum; i++){
+				this.image = new Image();
+				this.tmp = i + 1;
+				this.image.src = "Images/pot" + this.tmp + ".png";
+				this.images.push(this.image);
+			}
+		}
+	}
+
+	cycleImages(){
+        if(this.inOnePiece){
+            this.image = this.images[this.maxImageNum - this.maxImageNum];
+        }
+        else{
+            this.image = this.images[this.maxImageNum - 1];
+
+        }
+    }
+
+	//Pot movement
+    movePotUp(){
+            this.xDirection = 0;
+            this.yDirection = -1;
+            this.y += this.speed * this.yDirection;
+    }
+    movePotRight(){
+        
+        this.xDirection = 1;
+        this.yDirection = 0;
+        this.x += this.speed * this.xDirection;
+        
+    }
+    movePotDown(){
+        this.xDirection = 0;
+        this.yDirection = 1;
+        this.y += this.speed * this.yDirection;
+    }
+    movePotLeft(){
+        this.xDirection = -1;
+        this.yDirection = 0;
+        this.x += this.speed * this.xDirection;
+    }
+
+	update(){
+        //Pot movement with link
+        if (this.moveUp){
+            this.movePotUp();
+        }
+        if (this.moveDown){
+            this.movePotDown();
+        }
+        if (this.moveLeft){
+            this.movePotLeft();
+        }
+        if (this.moveRight){
+            this.movePotRight();
+        }
+        this.cycleImages();
+
+        if (!this.inOnePiece){
+            this.countDown--;
+            if (this.countDown === 0){
+                this.isActive = false;
+            }
+        }
+        return this.isActive;
+    }
+
+	isPot(){return true;}
+
+	Collided(){
+        this.inOnePiece = false;
+        this.speed = 0;
+    }
+
+
+
 }
 
 class Boomerang extends Sprite{
@@ -223,6 +325,7 @@ class Model{
 	constructor(){
 		this.sprites = [];
 		this.sprites.push(new Brick(200, 100, 50, 50, "brick.jpg"));
+		this.sprites.push(new Pot(70,70,35,35));
 		this.link = new Link(50,50);
 		this.sprites.push(this.link);
 	}
@@ -241,6 +344,44 @@ class Model{
 						//Collision for boomerang hitting anything (besides link)
 						else if (this.sprites[i].isBoomerang() && !this.sprites[j].isLink()){
 							this.sprites[i].Collided();
+						}
+						//Collision for pots with anything (besides link)
+						else if (this.sprites[i].isPot() && !this.sprites[j].isLink()){
+							this.n = this.sprites[i];
+							this.n.Collided();
+						}
+						if (this.sprites[i].isLink() && this.sprites[j].isPot()){
+							if (this.link.getDirection() == 1){
+								this.n = this.sprites[j];
+								this.n.moveUp = true;
+								this.n.moveLeft = false;
+								this.n.moveDown = false;
+								this.n.moveRight = false;
+							}
+							else if (this.link.getDirection() == 2){
+								//Need to move the pot right
+								this.n = this.sprites[j];
+								this.n.moveRight = true;
+								this.n.moveLeft = false;
+								this.n.moveDown = false;
+								this.n.moveUp = false;
+							}
+							else if (this.link.getDirection() == 3){
+								//need to move the pot down
+								this.n = this.sprites[j];
+								this.n.moveDown = true;
+								this.n.moveLeft = false;
+								this.n.moveRight = false;
+								this.n.moveUp = false;
+							}
+							else if (this.link.getDirection() == 4){
+								//Need to move the pot left
+								this.n = this.sprites[j];
+								this.n.moveLeft = true;
+								this.n.moveDown = false;
+								this.n.moveUp = false;
+								this.n.moveRight = false;
+							}
 						}
 					}
 				}
