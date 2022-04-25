@@ -10,12 +10,12 @@
 
 class Sprite
 {
-	constructor(x1, y1, w1, h1)
+	constructor(x1, y1)
 	{
 		this.x = x1;
 		this.y = y1;
-		this.w = w1;
-		this.h = h1;
+		this.w = 0;
+		this.h = 0;
 		this.image = new Image();
 		this.direction = 0;
 	}
@@ -37,8 +37,10 @@ class Sprite
 }
 
 class Pot extends Sprite{
-	constructor(x,y,w,h){
-		super(x,y,w,h);
+	constructor(x,y){
+		super(x,y);
+		this.w = 35;
+		this.h = 35;
 		this.images = [];
 		this.maxImageNum = 2;
 		this.animationNum = 0;
@@ -136,8 +138,10 @@ class Pot extends Sprite{
 }
 
 class Boomerang extends Sprite{
-	constructor(x,y,w,h){
-		super(x,y,w,h);
+	constructor(x,y){
+		super(x,y);
+		this.w = 8;
+		this.h = 12;
 		this.images = [];
 		this.loadImages();
 		this.isActive = true;
@@ -186,11 +190,13 @@ class Boomerang extends Sprite{
 
 
 class Brick extends Sprite{
-	constructor(x, y, w, h, image_url)
+	constructor(x, y)
 	{
-		super(x, y, w, h);
+		super(x, y);
+		this.w = 50;
+		this.h = 50;
 		this.image = new Image();
-		this.image.src = image_url;
+		this.image.src = "/brick.jpg";
 	}
 	
 	update() //sit_still
@@ -202,11 +208,11 @@ class Brick extends Sprite{
 class Link extends Sprite{
 
 	constructor(X, Y){
-		const width = 55;
-		const height = 70;
-		super(X, Y, width, height);
+		super(X, Y);
 		this.linkPictures = [];
 		this.loadImages();
+		this.w = 55;
+		this.h = 70;
 		this.x = X;
 		this.y = X;
 		this.prevX = this.x;
@@ -324,8 +330,8 @@ class Link extends Sprite{
 class Model{
 	constructor(){
 		this.sprites = [];
-		this.sprites.push(new Brick(200, 100, 50, 50, "brick.jpg"));
-		this.sprites.push(new Pot(70,70,35,35));
+		this.sprites.push(new Brick(200, 100, "brick.jpg"));
+		this.sprites.push(new Pot(120,400,35,35));
 		this.link = new Link(50,50);
 		this.sprites.push(this.link);
 	}
@@ -528,8 +534,6 @@ class Controller
 
 	//Making sure the view stays in bounds
 	viewIncreaseX(){
-		console.log(this.model.link.x)
-		console.log(this.view.windowXSize)
 		if (this.model.link.x >= this.view.windowXSize && this.view.scrollPositonX < this.view.windowXSize){
 			this.view.scrollPositonX += this.view.windowXSize;
 		}
